@@ -57,7 +57,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
 
     let (api_id, api_hash) = load_credentials()?;
-    println!("🚀 Starting with API_ID: {} and API_HASH: {}", api_id, api_hash);
+    println!(
+        "🚀 Starting with API_ID: {} and API_HASH: {}",
+        api_id, api_hash
+    );
 
     let client = init_client(api_id, &api_hash).await?;
     let bot = resolve_bot(&client).await?;
@@ -85,10 +88,7 @@ fn load_credentials() -> Result<(i32, String), Box<dyn std::error::Error>> {
     Ok((api_id, api_hash))
 }
 
-async fn init_client(
-    api_id: i32,
-    api_hash: &str,
-) -> Result<Client, Box<dyn std::error::Error>> {
+async fn init_client(api_id: i32, api_hash: &str) -> Result<Client, Box<dyn std::error::Error>> {
     let session = Session::load_file_or_create(SESSION_FILE)?;
     let client = Client::connect(Config {
         session,
@@ -96,7 +96,7 @@ async fn init_client(
         api_hash: api_hash.to_string(),
         params: Default::default(),
     })
-        .await?;
+    .await?;
 
     if !client.is_authorized().await? {
         authorize_client(&client).await?;
@@ -133,7 +133,6 @@ async fn authorize_client(client: &Client) -> Result<(), Box<dyn std::error::Err
 
     Ok(())
 }
-
 
 async fn resolve_bot(client: &Client) -> Result<PackedChat, Box<dyn std::error::Error>> {
     println!("🔍 Searching for bot {}...", BOT_USERNAME);
