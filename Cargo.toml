@@ -2,9 +2,14 @@
 name = "grok-client"
 version = "0.1.0"
 edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "Telegram Grok AI client library"
+license = "MIT"
+repository = "https://github.com/yourusername/grok-client"
 
 [dependencies]
-grammers-client = "0.7"
-grammers-session = "0.7.0"
+grammers-client = "0.5"
 tokio = { version = "1.0", features = ["full"] }
 dotenv = "0.15"
+thiserror = "1.0"
+async-trait = "0.1"
