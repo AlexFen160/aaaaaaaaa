@@ -1,15 +1,27 @@
 [package]
 name = "grok-client"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+description = "Universal Telegram client with priority queue"
 authors = ["Your Name <your.email@example.com>"]
-description = "Telegram Grok AI client library"
 license = "MIT"
 repository = "https://github.com/yourusername/grok-client"
 
+[lib]
+name = "grok_client"
+path = "src/lib.rs"
+
+[[example]]
+name = "basic_usage"
+path = "examples/basic_usage.rs"
+
 [dependencies]
-grammers-client = "0.5"
+grammers-client = "0.7"
+grammers-session = "0.7.0"
 tokio = { version = "1.0", features = ["full"] }
 dotenv = "0.15"
-thiserror = "1.0"
 async-trait = "0.1"
+thiserror = "1.0"
+serde = { version = "1.0.219", features = ["derive"] }
+log = "0.4.27"
+env_logger = "0.10"

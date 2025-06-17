@@ -1,32 +1,28 @@
-use dotenv::dotenv;
-use std::env;
+use serde::Deserialize;
+use std::path::PathBuf;
 
-#[derive(Debug, Clone)]
-pub struct Config {
+#[derive(Debug, Clone, Deserialize)]
+pub struct GrokConfig {
     pub api_id: i32,
     pub api_hash: String,
     pub bot_username: String,
-    pub session_file: String,
+    pub session_path: PathBuf,
+    pub response_timeout: u64,
 }
 
-impl Config {
-    pub fn from_env() -> Result<Self, crate::error::GrokError> {
-        dotenv().ok();
-
-        Ok(Self {
-            api_id: env::var("API_ID")
-                .map_err(|_| crate::error::GrokError::ConfigMissing("API_ID"))?
-                .parse()
-                .map_err(|_| crate::error::GrokError::ConfigInvalid("API_ID"))?,
-
-            api_hash: env::var("API_HASH")
-                .map_err(|_| crate::error::GrokError::ConfigMissing("API_HASH"))?,
-
-            bot_username: env::var("BOT_USERNAME")
-                .unwrap_or_else(|_| "GrokAI".to_string()),
-
-            session_file: env::var("SESSION_FILE")
-                .unwrap_or_else(|_| "session.session".to_string()),
-        })
+impl GrokConfig {
+    pub fn new(
+        api_id: i32,
+        api_hash: impl Into<String>,
+        bot_username: impl Into<String>,
+        session_path: impl Into<PathBuf>,
+    ) -> Self {
+        Self {
+            api_id,
+            api_hash: api_hash.into(),
+            bot_username: bot_username.into(),
+            session_path: session_path.into(),
+            response_timeout: 30,
+        }
     }
 }

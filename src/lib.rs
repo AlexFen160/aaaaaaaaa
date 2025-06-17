@@ -1,9 +1,18 @@
-pub mod client;
 pub mod config;
+pub mod client;
 pub mod error;
-pub mod handlers;
 pub mod queue;
 
-pub use client::TelegramClient;
-pub use config::Config;
-pub use queue::{BotRequest, RequestPriority};
+pub use config::GrokConfig;
+pub use client::GrokClient;
+pub use error::GrokError;
+pub use queue::RequestPriority;
+
+pub mod prelude {
+    pub use crate::{
+        GrokConfig,
+        GrokClient,
+        GrokError,
+        RequestPriority
+    };
+}

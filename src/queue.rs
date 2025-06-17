@@ -1,43 +1,56 @@
-// grok-client/src/queue.rs
-use std::{
-    collections::VecDeque,
-    sync::Arc,
-};
-use tokio::sync::Mutex;
+use grammers_client::InputMessage;
+use std::collections::BinaryHeap;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum RequestPriority {
-    High = 2,
-    Normal = 1,
-    Low = 0,
+    Emergency = 5,
+    High = 3,
+    Normal = 2,
+    Low = 1,
 }
 
-pub struct BotRequest {
-    pub message: grammers_client::InputMessage,
-    pub priority: RequestPriority,
+// Убрать #[derive(Debug)]
+struct QueueItem {
+    message: InputMessage,
+    priority: RequestPriority,
 }
+
+impl PartialOrd for QueueItem {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for QueueItem {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.priority.cmp(&other.priority).reverse()
+    }
+}
+
+impl PartialEq for QueueItem {
+    fn eq(&self, other: &Self) -> bool {
+        self.priority == other.priority
+    }
+}
+
+impl Eq for QueueItem {}
 
 pub struct PriorityQueue {
-    inner: Mutex<VecDeque<BotRequest>>,
+    inner: BinaryHeap<QueueItem>,
 }
 
 impl PriorityQueue {
-    pub fn new() -> Arc<Self> {
-        Arc::new(Self {
-            inner: Mutex::new(VecDeque::new()),
-        })
+    pub fn new() -> Self {
+        Self {
+            inner: BinaryHeap::new(),
+        }
     }
 
-    pub async fn push(&self, request: BotRequest) {
-        let mut queue = self.inner.lock().await;
-        let pos = queue
-            .iter()
-            .position(|r| r.priority < request.priority)
-            .unwrap_or(queue.len());
-        queue.insert(pos, request);
+    pub fn push(&mut self, message: InputMessage, priority: RequestPriority) {
+        self.inner.push(QueueItem { message, priority });
     }
 
-    pub async fn pop(&self) -> Option<BotRequest> {
-        self.inner.lock().await.pop_front()
+    pub fn pop(&mut self) -> Option<(InputMessage, RequestPriority)> {
+        self.inner.pop().map(|item| (item.message, item.priority))
     }
 }

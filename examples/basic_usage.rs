@@ -1,14 +1,20 @@
-
-use grok_client::{Config, TelegramClient, RequestPriority};
+use grok_client::prelude::*;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = Config::from_env()?;
-    let client = TelegramClient::new(config).await?;
-    client.start_processing().await;
+async fn main() -> Result<(), GrokError> {
+    env_logger::init();
 
-    client.send_message("High priority message!", RequestPriority::High).await;
-    client.send_message("Normal message", RequestPriority::Normal).await;
+    let config = GrokConfig::new(
+        ************,          // Ваш API_ID
+        "*********************", // Ваш API_HASH
+        "GrokAI",      // Имя бота без @
+        "session.session"
+    );
+
+    let client = GrokClient::new(config).await?;
+    client.start();
+
+    client.send("Hello! What can you do?", RequestPriority::High).await?;
 
     tokio::signal::ctrl_c().await?;
     Ok(())
