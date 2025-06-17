@@ -14,7 +14,7 @@ async fn main() -> Result<(), GrokError> {
     let client = GrokClient::new(config).await?;
     client.start();
 
-    client.send("Hello! What can you do?", RequestPriority::High).await?;
+    client.send("Hello!", RequestPriority::High).await?; // "Hello!" зпменить на текстовый вход
 
     tokio::signal::ctrl_c().await?;
     Ok(())
